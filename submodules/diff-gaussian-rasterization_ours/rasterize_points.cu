@@ -65,7 +65,7 @@ RasterizeGaussiansCUDA(
     const bool prefiltered,
     const bool require_depth,
     const bool debug,
-    const std::optional<std::array<float, 9>>& kb4) {
+    const std::optional<std::array<float, 10>>& kb4) {
     if (means3D.ndimension() != 2 || means3D.size(1) != 3) {
         AT_ERROR("means3D must have dimensions (num_points, 3)");
     }
@@ -73,9 +73,9 @@ RasterizeGaussiansCUDA(
     if (kb4) {
         const auto& k     = *kb4;
         const bool finite = std::all_of(k.begin(), k.end(), [](float v) { return std::isfinite(v); });
-        TORCH_CHECK(finite && k[0] > 0.f && k[1] > 0.f && k[8] > 0.f && k[8] + KB4_THETA_MARGIN < M_PI,
-                    "kb4 needs finite parameters, fx > 0, fy > 0 and 0 < theta_max < pi - ", KB4_THETA_MARGIN);
-        camera = CudaRasterizer::KB4Camera{k[0], k[1], k[2], k[3], k[4], k[5], k[6], k[7], k[8]};
+        TORCH_CHECK(finite && k[0] > 0.f && k[1] > 0.f && k[8] > 0.f && k[8] + KB4_THETA_MARGIN < M_PI && k[9] > 0.f,
+                    "kb4 needs finite parameters, fx > 0, fy > 0, 0 < theta_max < pi - ", KB4_THETA_MARGIN, " and near > 0");
+        camera = CudaRasterizer::KB4Camera{k[0], k[1], k[2], k[3], k[4], k[5], k[6], k[7], k[8], k[9]};
     }
 
     const int P = means3D.size(0);

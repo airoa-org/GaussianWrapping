@@ -1,10 +1,10 @@
 # Forward KB4 camera
 
-- `GaussianRasterizationSettings` accepts `camera_model="kb4"`, `fx`, `fy`, `cx`, `cy`, `k1` through `k4`, and `theta_max` in radians. Pixel centers use integer coordinates.
+- `GaussianRasterizationSettings` accepts `camera_model="kb4"`, `fx`, `fy`, `cx`, `cy`, `k1` through `k4`, `theta_max` in radians, and `kb4_near` in scene units (> 0). Pixel centers use integer coordinates.
 - `render_ours(..., camera_settings={...})` forwards these fields to the rasterizer.
 - KB4 returns median depth as distance along the pixel ray in scene units. Pinhole depth retains its optical-axis convention.
 - KB4 is forward-only. Backward, `markVisible`, `integrate`, `evaluate_sdf`, and `sample_depth` raise `NotImplementedError`.
-- Means closer than 0.2 scene units are culled. Means beyond `theta_max + 0.5` radians are culled; the caller must mask pixels outside `theta_max`.
+- Means closer than `kb4_near` scene units (default 0.2, the pinhole near plane) to the camera centre are culled. Means beyond `theta_max + 0.5` radians are culled; the caller must mask pixels outside `theta_max`.
 - The pinhole camera remains the default.
 
 ## Build and test

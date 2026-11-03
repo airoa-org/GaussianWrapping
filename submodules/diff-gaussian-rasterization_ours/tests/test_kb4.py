@@ -194,6 +194,17 @@ def test_culls_near_means_and_means_beyond_the_margin():
     assert (radii > 0).tolist() == [True, False, False, True]
 
 
+def test_kb4_near_sets_the_near_cull_distance():
+    near = np.stack([[0.0, 0.0, 0.15], [0.003, 0.0, 0.004], [0.0, 0.0, 0.25]])
+    assert (render(near, np.full(3, 0.01))[1] > 0).tolist() == [False, False, True]  # default 0.2
+    assert (render(near, np.full(3, 0.01), kb4_near=0.2)[1] > 0).tolist() == [False, False, True]
+    assert (render(near, np.full(3, 0.01), kb4_near=0.01)[1] > 0).tolist() == [True, False, True]
+    assert (render(near, np.full(3, 0.01), kb4_near=1e-3)[1] > 0).tolist() == [True, True, True]
+    for bad in (0.0, -0.1, float("nan")):
+        with pytest.raises(RuntimeError, match="near"):
+            render(near, np.full(3, 0.01), kb4_near=bad)
+
+
 def test_matches_the_pinhole_camera_near_the_axis():
     # With k1..k4 = 0, kb4 maps theta to f * theta and a pinhole to f * tan(theta): 0.012 px apart at 3 deg.
     f = CAM["fx"]

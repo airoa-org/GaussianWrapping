@@ -21,6 +21,7 @@ namespace CudaRasterizer {
 struct KB4Camera {
     float fx, fy, cx, cy, k1, k2, k3, k4;
     float theta_max; // [rad] half-angle of the image circle
+    float near;      // [scene units] drops a Gaussian whose mean is within this distance of the camera centre
 };
 
 class Rasterizer {

@@ -25,7 +25,7 @@ def _kb4_params(raster_settings):
     if s.camera_model == "pinhole":
         return None
     if s.camera_model == "kb4":
-        return (s.fx, s.fy, s.cx, s.cy, s.k1, s.k2, s.k3, s.k4, s.theta_max)
+        return (s.fx, s.fy, s.cx, s.cy, s.k1, s.k2, s.k3, s.k4, s.theta_max, s.kb4_near)
     raise ValueError(f"camera_model must be 'pinhole' or 'kb4', got {s.camera_model!r}")
 
 
@@ -295,6 +295,9 @@ class GaussianRasterizationSettings(NamedTuple):
     k3: float = 0.0
     k4: float = 0.0
     theta_max: float = 0.0  # [rad] the caller masks pixels outside this image circle
+    # [scene units] kb4 drops a Gaussian whose mean lies within this distance of the camera centre. The default
+    # is the pinhole near plane (config.h NEAR_PLANE); a caller whose scene unit is not about a metre passes its own.
+    kb4_near: float = 0.2
 
 
 class GaussianRasterizer(nn.Module):

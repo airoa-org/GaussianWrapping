@@ -290,7 +290,7 @@ __device__ __forceinline__ bool projectKB4(const float3& mean, const float* view
     const float rho   = sqrtf(t.x * t.x + t.y * t.y);
     const float dist  = norm3df(t.x, t.y, t.z);
     const float theta = atan2f(rho, t.z);
-    if (dist <= NEAR_PLANE || theta > cam.theta_max + KB4_THETA_MARGIN)
+    if (dist <= cam.near || theta > cam.theta_max + KB4_THETA_MARGIN)
         return false;
     const float t2      = theta * theta;
     const float theta_d = theta * (1.f + t2 * (cam.k1 + t2 * (cam.k2 + t2 * (cam.k3 + t2 * cam.k4))));
